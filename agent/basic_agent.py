@@ -1,0 +1,3 @@
+"""
+    basic agent for game:
+"""
