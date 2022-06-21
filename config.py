@@ -42,14 +42,7 @@ def colrow_to_xy(col, row, size):
     return x, y
 
 def make_grid(size):
-    """Return list of (start_point, end_point pairs) defining gridlines
-
-    Args:
-        size (int): size of grid
-
-    Returns:
-        Tuple[List[Tuple[float, float]]]: start and end points for gridlines
-    """
+    
     start_points, end_points = [], []
 
     # vertical start points (constant y)

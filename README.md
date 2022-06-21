@@ -2,6 +2,6 @@
 Project for AI subject - Game Go
 
 ## How to run?
-Step 0: set up Python 3 & install modules: numpy, pygame </p>
-Step 1: Clone this repository </p>
-Step 2: Run this file "main.py" </p>
+Step 0: Set up Python environment & install modules: numpy, pygame </p>
+Step 1: Clone this repository or download zip & unzip </p>
+Step 2: Run file "main.py" </p>
