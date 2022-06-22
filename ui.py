@@ -18,13 +18,13 @@ DOT_RADIUS = 4
 TURN_POS = (BOARD_BORDER, 20)
 SCORE_POS = (BOARD_BORDER, BOARD_WIDTH - BOARD_BORDER + 30)
 
-def get_rbg(color):   
+def get_rgb(color):   
     if color == 'WHITE':
         return 255, 255, 255
     elif color == 'BLACK':
         return 0, 0, 0
     else:
-        return 0, 133, 211
+        return 0, 133, 211 # color for hỉnt
    
 # convert coordinates to intersections  
 def xy_to_colrow(x, y, size):    
@@ -111,7 +111,7 @@ class UI:
         pygame.display.flip()
     
     def draw(self, point, color, size=STONE_RADIUS):
-        color = get_rbg(color)
+        color = get_rgb(color)
         pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], self.size), size, 0)
         pygame.display.update()
 

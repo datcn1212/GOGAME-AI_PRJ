@@ -61,7 +61,7 @@ class Match:
         self.time_elapsed = time.time()
 
         # First move is fixed on the center of board
-        first_move = (10, 10)
+        first_move = (9, 9)
         self.board.put_stone(first_move, check_legal=False)
         self.ui.draw(first_move, opponent_color(self.board.next))
 
@@ -93,7 +93,7 @@ class Match:
                     print('Game ends early (no legal action is available for %s)' % self.board.next)
             else:
                 for action in self.board.legal_actions:
-                    self.ui.draw(action, 'BLUE', 8)
+                    self.ui.draw(action, 'BLUE', 5)
 
         self.time_elapsed = time.time() - self.time_elapsed
         if self.dir_save:
@@ -155,9 +155,9 @@ class Match:
 
 def get_args():
     parser = ArgumentParser('Mini Go Game')
-    parser.add_argument('-b', '--agent_black', default=None,
+    parser.add_argument('-b', '--agent_black', default="greedy",
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-w', '--agent_white', default="expectimax",
+    parser.add_argument('-w', '--agent_white', default="greedy",
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
     parser.add_argument('-d', '--search_depth', type=int, default=2,
                         help='the search depth for searching agents if applicable; DEFAULT is 1')
