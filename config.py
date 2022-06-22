@@ -67,7 +67,7 @@ def make_grid(size):
 
     return (start_points, end_points)
 
-def has_no_liberties(board, group):
+def has_no_liberties(board, group): # cai nay goi la khi'
     """Check if a stone group has any liberties on a given board.
 
     Args:

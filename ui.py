@@ -37,7 +37,7 @@ def xy_to_colrow(x, y, size):
 
 # convert intersections to coordinates
 def colrow_to_xy(col, row, size):    
-    inc = (BOARD_WIDTH - 2 * BOARD_BORDER) / (size - 1)
+    inc = (BOARD_WIDTH - 2 * BOARD_BORDER) / (size - 1) # side of 1 box
     x = int(BOARD_BORDER + col * inc)
     y = int(BOARD_BORDER + row * inc)
     return x, y
@@ -76,29 +76,32 @@ def make_grid(size):
 
     return (start_points, end_points)
 
+def leftup_corner(point):
+    return -15 + point[0] * 40, -15 + point[1] * 40
+
 class UI:
     
     def __init__(self, size):
         self.size = size
         self.start_points, self.end_points = make_grid(self.size)
+        self.screen = None
+        self.outline = pygame.Rect(BOARD_BORDER, BOARD_BORDER, BOARD_WIDTH - BOARD_BORDER, BOARD_WIDTH - BOARD_BORDER)
 
     def init_pygame(self):
         pygame.init()
+        pygame.display.set_caption('GO')
         screen = pygame.display.set_mode((BOARD_WIDTH, BOARD_WIDTH))
         self.screen = screen
         self.ZOINK = pygame.mixer.Sound("wav/zoink.wav")
         self.CLICK = pygame.mixer.Sound("wav/click.wav")
         self.font = pygame.font.SysFont("arial", 30)
-      
-     
-    def clear_screen(self): 
-        
+
         # fill board and add gridlines 
         self.screen.fill(BOARD_BROWN)
         for start_point, end_point in zip(self.start_points, self.end_points):
             pygame.draw.line(self.screen, BLACK, start_point, end_point)
 
-        # add guide dots
+        # add guide dots - "star points" 
         guide_dots = [3, self.size // 2, self.size - 4]
         for col, row in itertools.product(guide_dots, guide_dots):
             x, y = colrow_to_xy(col, row, self.size)
@@ -107,8 +110,21 @@ class UI:
 
         pygame.display.flip()
     
+    def draw(self, point, color, size=STONE_RADIUS):
+        color = get_rbg(color)
+        pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], self.size), size, 0)
+        pygame.display.update()
+
+    def remove(self, point):
+        blit_coords = leftup_corner(point)
+        area_rect = pygame.Rect(blit_coords, (40, 40))
+        self.screen.blit(self.screen, blit_coords, area_rect)
+        pygame.display.update()
+    
     #save the image of the game
     def save_image(self, path_to_save):
         pygame.image.save(self.screen, path_to_save)
+    
+
 
 

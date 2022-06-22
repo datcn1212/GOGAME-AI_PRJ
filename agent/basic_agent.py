@@ -1,9 +1,9 @@
 """
-    basic agent for game:
+    basic agent for game: random, greedy
 """
 
 import random
-#from game.go import Board, opponent_color
+from config_main import Board, opponent_color
 import random
 
 

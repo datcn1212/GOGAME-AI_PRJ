@@ -1,4 +1,5 @@
 """Create full environment for the game"""
+# go
 
 import pygame
 import numpy as np
@@ -6,7 +7,11 @@ import itertools
 import sys
 import networkx as nx
 import collections
+from copy import deepcopy
+from util import *
 from pygame import gfxdraw
+
+BOARD_SIZE = 19
 
 def opponent_color(color):
     if color == 'WHITE':
@@ -20,11 +25,12 @@ def opponent_color(color):
 
 def neighbors(point):
     """Return a list of neighboring points."""
+    # up, down, right, left
     neighboring = [(point[0] - 1, point[1]),
                    (point[0] + 1, point[1]),
                    (point[0], point[1] - 1),
                    (point[0], point[1] + 1)]
-    return [point for point in neighboring if 0 < point[0] < BOARD_SIZE and 0 < point[1] < BOARD_SIZE]
+    return [point for point in neighboring if 0 <= point[0] < BOARD_SIZE and 0 <= point[1] < BOARD_SIZE]
 
 
 def cal_liberty(points, board):
