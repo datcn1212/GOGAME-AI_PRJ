@@ -1,15 +1,7 @@
-"""Create full environment for the game"""
-# go
+"""Full backend for the game"""
 
-import pygame
-import numpy as np
-import itertools
-import sys
-import networkx as nx
-import collections
 from copy import deepcopy
 from util import *
-from pygame import gfxdraw
 
 BOARD_SIZE = 19
 
@@ -22,25 +14,24 @@ def opponent_color(color):
         print('Invalid color: ' + color)
         return KeyError
 
-
+# list of neighbor-points (up, down, left, right)
 def neighbors(point):
-    """Return a list of neighboring points."""
-    # up, down, right, left
     neighboring = [(point[0] - 1, point[1]),
                    (point[0] + 1, point[1]),
                    (point[0], point[1] - 1),
                    (point[0], point[1] + 1)]
-    return [point for point in neighboring if 0 <= point[0] < BOARD_SIZE and 0 <= point[1] < BOARD_SIZE]
+    return [point for point in neighboring if 0 <= point[0] < BOARD_SIZE and 0 <= point[1] < BOARD_SIZE] 
+    # 0 to 18
 
-
+# liberties of the point (khí)
 def cal_liberty(points, board):
-    """Find and return the liberties of the point."""
     liberties = [point for point in neighbors(points)
                  if not board.stonedict.get_groups('BLACK', point) and not board.stonedict.get_groups('WHITE', point)]
     return set(liberties)
 
 
-class Group(object):
+class Group:
+    
     def __init__(self, point, color, liberties):
         """
         Create and initialize a new group.
@@ -49,6 +40,7 @@ class Group(object):
         :param liberties:
         """
         self.color = color
+        # points: return list of points or 1 point
         if isinstance(point, list):
             self.points = point
         else:
@@ -59,10 +51,12 @@ class Group(object):
     def num_liberty(self):
         return len(self.liberties)
 
+    # add stone(s) to "points"
     def add_stones(self, pointlist):
         """Only update stones, not liberties"""
         self.points.extend(pointlist)
     
+    # remove a point from "liberties"
     def remove_liberty(self, point):
         self.liberties.remove(point)
 
@@ -72,19 +66,18 @@ class Group(object):
                (self.color,
                 ', '.join([str(point) for point in self.points]),
                 ', '.join([str(point) for point in self.liberties]))
-    
-    def __repr__(self):
-        return str(self)
 
 
-class Board(object):
+class Board:
     """
-    get_legal_actions(), generate_successor_state() are the external game interface.
-    put_stone() is the main internal method that contains all logic to update game state.
-    create_group(), remove_group(), merge_groups() operations don't check winner or endangered groups.
-    Winner or endangered groups are updated in put_stone().
+    get_legal_actions(), generate_successor_state() ----external game interface.
+    put_stone() ---- main internal method that contains all logic to update game state.
+    create_group(), remove_group(), merge_groups() ----operations don't check winner or endangered groups.
+    put_stone() ----update winner or endangered groups
+    
     Winning criteria: remove any opponent's group, or no legal actions for opponent.
     """
+    
     def __init__(self, next_color='BLACK'):
         self.winner = None
         self.next = next_color

@@ -1,37 +1,34 @@
-"""
-    main file to play match
-"""
-# match
+"""Main file to play match"""
+
+import pygame
+import time
 
 from config_main import *
 from ui import *
-import pygame
-import time
-from agent.basic_agent import RandomAgent, GreedyAgent
-from agent.alpha_beta import AlphaBetaAgent, ExpectimaxAgent
-#from agent.rl.rl_agent import ApproxQAgent
-#from agent.rl.rl_env import RlEnv
+from agent.basic_agent import *
+from agent.alpha_beta import *
 from os.path import join
 from argparse import ArgumentParser
 
+
 class Match:
     
-    def __init__(self, agent_black=None, agent_white=None, gui=True, dir_save=None):
+    def __init__(self, black_agent = None, white_agent = None, gui = True, dir_save=None):
         """
         BLACK always has the first move on the center of the board.
-        :param agent_black: agent or None(human)
-        :param agent_white: agent or None(human)
+        :param black_agent: agent or None(human)
+        :param white_agent: agent or None(human)
         :param gui: if show GUI; always true if there are human playing
         :param dir_save: directory to save board image if GUI is shown; no save for None
         """
-        self.agent_black = agent_black
-        self.agent_white = agent_white
+        self.black_agent = black_agent
+        self.white_agent = white_agent
 
-        self.board = Board(next_color='BLACK')
+        self.board = Board(next_color = 'BLACK')
         #self.size = size
 
-        gui = gui if agent_black and agent_white else True
-        self.ui = UI(19) if gui else None
+        gui = gui if black_agent and white_agent else True
+        self.ui = UI() if gui else None
         self.dir_save = dir_save
 
         # Metadata
@@ -49,18 +46,19 @@ class Match:
     def counter_move(self):
         return self.board.counter_move
 
+    # func to start game
     def start(self):
         if self.ui:
             self._start_with_ui()
         else:
             self._start_without_ui()
-
+        
+    # start game with gui
     def _start_with_ui(self):
-        """Start the game with GUI."""
-        self.ui.init_pygame()
-        self.time_elapsed = time.time()
+        self.ui.init_pygame() # draw board, gridlines, guide dots
+        self.time_elapsed = time.time() # time at game starting
 
-        # First move is fixed on the center of board
+        # First move - center of board
         first_move = (9, 9)
         self.board.put_stone(first_move, check_legal=False)
         self.ui.draw(first_move, opponent_color(self.board.next))
@@ -68,9 +66,9 @@ class Match:
         # Take turns to play move
         while self.board.winner is None:
             if self.board.next == 'BLACK':
-                point = self.perform_one_move(self.agent_black)
+                point = self.perform_one_move(self.black_agent)
             else:
-                point = self.perform_one_move(self.agent_white)
+                point = self.perform_one_move(self.white_agent)
 
             # Check if action is legal
             if point not in self.board.legal_actions:
@@ -101,6 +99,7 @@ class Match:
             self.ui.save_image(path_file)
             print('Board image saved in file ' + path_file)
 
+    # start game without gui
     def _start_without_ui(self):
         """Start the game without GUI. Only possible when no human is playing."""
         # First move is fixed on the center of board
@@ -111,9 +110,9 @@ class Match:
         # Take turns to play move
         while self.board.winner is None:
             if self.board.next == 'BLACK':
-                point = self.perform_one_move(self.agent_black)
+                point = self.perform_one_move(self.black_agent)
             else:
-                point = self.perform_one_move(self.agent_white)
+                point = self.perform_one_move(self.white_agent)
 
             # Apply action
             self.board.put_stone(point, check_legal=False)  # Assuming agent always gives legal actions
@@ -155,11 +154,11 @@ class Match:
 
 def get_args():
     parser = ArgumentParser('Mini Go Game')
-    parser.add_argument('-b', '--agent_black', default="greedy",
+    parser.add_argument('-b', '--black_agent', default="minimax",
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-w', '--agent_white', default="greedy",
+    parser.add_argument('-w', '--white_agent', default=None,
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-d', '--search_depth', type=int, default=2,
+    parser.add_argument('-d', '--search_depth', type=int, default=3,
                         help='the search depth for searching agents if applicable; DEFAULT is 1')
     parser.add_argument('-g', '--gui', type=bool, default=True,
                         help='if show GUI; always true if human plays; DEFAULT is True')
@@ -195,26 +194,31 @@ def get_agent(str_agent, color, depth):
 def main():
     args = get_args()
     depth = args.search_depth
-    agent_black = get_agent(args.agent_black, 'BLACK', depth)
-    agent_white = get_agent(args.agent_white, 'WHITE', depth)
+    black_agent = get_agent(args.black_agent, 'BLACK', depth)
+    white_agent = get_agent(args.white_agent, 'WHITE', depth)
     gui = args.gui
     dir_save = args.dir_save
     #size = args.size
 
-    print('Agent for BLACK: ' + (str(agent_black) if agent_black else 'Human'))
-    print('Agent for WHITE: ' + (str(agent_white) if agent_white else 'Human'))
+    print('Agent for BLACK: ' + (str(black_agent) if black_agent else 'Human'))
+    print('Agent for WHITE: ' + (str(white_agent) if white_agent else 'Human'))
     if dir_save:
         print('Directory to save board image: ' + dir_save)
 
-    match = Match(agent_black=agent_black, agent_white=agent_white, gui=gui, dir_save=dir_save)
+    match = Match(black_agent=black_agent, white_agent=white_agent, gui=gui, dir_save=dir_save)
 
     print('Match starts!')
     match.start()
-
+    
+    #sound for black or white win: (need updating)
+    pygame.mixer.Sound("wav/zoink.wav").play()
+    
+    pygame.time.wait(5000)
     print(match.winner + ' wins!')
-    print('Match ends in ' + str(match.time_elapsed) + ' seconds')
+    print('Match ends in ' + str(round(match.time_elapsed,2)) + ' seconds')
     print('Match ends in ' + str(match.counter_move) + ' moves')
 
 
 if __name__ == '__main__':
+    
     main()
