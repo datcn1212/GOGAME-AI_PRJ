@@ -43,7 +43,7 @@ class GreedyAgent(Agent):
 
     def get_action(self, board):
         actions = board.get_legal_actions()
-        num_groups = [len(board.libertydict.get_groups(opponent_color(self.color), action)) for action in actions]
+        num_groups = [len(board.liberty_dict.get_groups(opponent_color(self.color), action)) for action in actions]
         max_num_groups = max(num_groups)
         idx_candidates = [idx for idx, num in enumerate(num_groups) if num == max_num_groups]
         return actions[random.choice(idx_candidates)] if actions else None

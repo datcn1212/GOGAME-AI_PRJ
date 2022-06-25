@@ -83,6 +83,7 @@ class UI:
         pygame.init()
         pygame.display.set_caption('GO Game by CND_NHH')
         self.screen = pygame.display.set_mode((BOARD_WIDTH, BOARD_WIDTH))
+        self.background = pygame.image.load('BACKGROUND.jpg').convert()
         self.ZOINK = pygame.mixer.Sound("wav/zoink.wav")
         self.CLICK = pygame.mixer.Sound("wav/click.wav")
         self.font = pygame.font.SysFont("arial", 30)
@@ -108,16 +109,22 @@ class UI:
         pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], size), size, 0)
         pygame.display.update()
 
-    # remove a stone
-    def remove(self, point):
-        blt = -inc/2 + point[0] * inc, -inc/2 + point[1] * inc  # top_left-conner point
-        area_rect = pygame.Rect(blt, (inc, inc))
-        self.screen.blit(self.screen, blt, area_rect)
+    # remove a stone - draw a red stone (or red legal action in previous step)
+    def remove(self, point, size):
+        # blt = -inc/2 + BOARD_BORDER + point[0] * inc, -inc/2 + BOARD_BORDER + point[1] * inc  # top_left-conner point
+        # area_rect = pygame.Rect(blt, (inc, inc))
+        # self.screen.blit(self.background, blt, area_rect)
+        # pygame.display.update()
+        color = (255,0,0)  # Red
+        pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], size), size, 0)
         pygame.display.update()
     
     #save the image of the game
     def save_image(self, path_to_save):
         pygame.image.save(self.screen, path_to_save)
+        
+        
+
     
 
 

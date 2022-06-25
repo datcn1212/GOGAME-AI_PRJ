@@ -2,6 +2,7 @@
 
 import pygame
 import time
+import sys
 
 from config_main import *
 from ui import *
@@ -60,7 +61,7 @@ class Match:
 
         # First move - center of board
         first_move = (9, 9)
-        self.board.put_stone(first_move, check_legal=False)
+        self.board.put_stone(first_move, check_legal = False)
         self.ui.draw(first_move, opponent_color(self.board.next))
 
         # Take turns to play move
@@ -77,16 +78,19 @@ class Match:
             # Apply action
             prev_legal_actions = self.board.legal_actions.copy()
             self.board.put_stone(point, check_legal=False)
+            
             # Remove previous legal actions on board
             for action in prev_legal_actions:
-                self.ui.remove(action)
+                self.ui.remove(action, 5)
+                
             # Draw new point
             self.ui.draw(point, opponent_color(self.board.next))
+            
             # Update new legal actions and any removed groups
             if self.board.winner:
                 for group in self.board.removed_groups:
                     for point in group.points:
-                        self.ui.remove(point)
+                        self.ui.remove(point, STONE_RADIUS)
                 if self.board.end_by_no_legal_actions:
                     print('Game ends early (no legal action is available for %s)' % self.board.next)
             else:
@@ -104,7 +108,7 @@ class Match:
         """Start the game without GUI. Only possible when no human is playing."""
         # First move is fixed on the center of board
         self.time_elapsed = time.time()
-        first_move = ((19+1)/2, (19+1)/2)
+        first_move = (9, 9)
         self.board.put_stone(first_move, check_legal=False)
 
         # Take turns to play move
@@ -139,8 +143,7 @@ class Match:
             pygame.time.wait(100)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    return
+                    sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     inc = (BOARD_WIDTH - 2 * BOARD_BORDER) / (19 - 1)
                     if event.button == 1 and self.ui.outline.collidepoint(event.pos):
@@ -154,15 +157,15 @@ class Match:
 
 def get_args():
     parser = ArgumentParser('Mini Go Game')
-    parser.add_argument('-b', '--black_agent', default="minimax",
+    parser.add_argument('-b', '--black_agent', default = 'minimax',
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-w', '--white_agent', default=None,
+    parser.add_argument('-w', '--white_agent', default = 'minimax',
                         help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-d', '--search_depth', type=int, default=3,
+    parser.add_argument('-d', '--search_depth', type=int, default = 3,
                         help='the search depth for searching agents if applicable; DEFAULT is 1')
-    parser.add_argument('-g', '--gui', type=bool, default=True,
+    parser.add_argument('-g', '--gui', type=bool, default = True,
                         help='if show GUI; always true if human plays; DEFAULT is True')
-    parser.add_argument('-s', '--dir_save', default="img",
+    parser.add_argument('-s', '--dir_save', default = "img",
                         help='if not None, save the image of last board state to this directory; DEFAULT is None')
     # parser.add_argument('-si', '--size', type=int, default=19,
     #                     help='size of the board; DEFAULT is 19')

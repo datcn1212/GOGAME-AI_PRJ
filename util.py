@@ -1,3 +1,4 @@
+# point dictionary for stones and liberties
 class PointDict:
     def __init__(self):
         self.d = {'BLACK': {}, 'WHITE': {}}

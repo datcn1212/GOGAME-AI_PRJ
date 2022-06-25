@@ -29,11 +29,11 @@ def evaluate(board: Board, color):
             return score_win / 2  # Good probability to win in the next next move
     for liberty in liberties_self:
         if is_dangerous_liberty(board, liberty, color):
-            self_groups = board.libertydict.get_groups(color, liberty)
+            self_groups = board.liberty_dict.get_groups(color, liberty)
             liberties = self_groups[0].liberties | self_groups[1].liberties
             able_to_save = False
             for lbt in liberties:
-                if len(board.libertydict.get_groups(oppo, lbt)) > 0:
+                if len(board.liberty_dict.get_groups(oppo, lbt)) > 0:
                     able_to_save = True
                     break
             if not able_to_save:
@@ -47,9 +47,9 @@ def evaluate(board: Board, color):
     num_shared_liberties_self = 0
     num_shared_liberties_oppo = 0
     for liberty in liberties_self:
-        num_shared_liberties_self += len(board.libertydict.get_groups(color, liberty)) - 1
+        num_shared_liberties_self += len(board.liberty_dict.get_groups(color, liberty)) - 1
     for liberty in liberties_oppo:
-        num_shared_liberties_oppo += len(board.libertydict.get_groups(oppo, liberty)) - 1
+        num_shared_liberties_oppo += len(board.liberty_dict.get_groups(oppo, liberty)) - 1
     score_liberties = num_shared_liberties_oppo - num_shared_liberties_self
 
     # Score for groups (doesn't help)

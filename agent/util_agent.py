@@ -36,7 +36,7 @@ def get_liberties(board: Board, color):
 
 
 def is_dangerous_liberty(board: Board, point, color):
-    self_groups = board.libertydict.get_groups(color, point)
+    self_groups = board.liberty_dict.get_groups(color, point)
     return len(self_groups) == 2 and self_groups[0].num_liberty == 2 and self_groups[1].num_liberty == 2
 
 
@@ -62,8 +62,8 @@ def eval_group(group: Group, board: Board):
 
     num_shared_liberty = 0
     for liberty in group.liberties:
-        num_shared_self_groups = len(board.libertydict.get_groups(group.color, liberty))
-        num_shared_oppo_groups = len(board.libertydict.get_groups(opponent_color(group.color), liberty))
+        num_shared_self_groups = len(board.liberty_dict.get_groups(group.color, liberty))
+        num_shared_oppo_groups = len(board.liberty_dict.get_groups(opponent_color(group.color), liberty))
         if num_shared_self_groups == 3 and num_shared_oppo_groups == 0:  # Group is safe
             return 0
         elif num_shared_self_groups == 2 or num_shared_self_groups == 3:
@@ -101,7 +101,7 @@ def get_group_scores(board: Board, color):
 def get_liberty_score(board: Board, color):
     scores = []
     share3 = 0
-    for liberty, groups in board.libertydict.get_items(color):
+    for liberty, groups in board.liberty_dict.get_items(color):
         if len(groups) == 0:
             continue
         elif len(groups) == 3:
