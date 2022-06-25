@@ -152,7 +152,10 @@ class AlphaBetaAgent(SearchAgent):
 
         return min_score, min_score_actions
 
-
+class MinimaxAgent(SearchAgent):
+    def __init__(self, color, depth, eval_func=evaluate):
+        super().__init__(color, depth, eval_func)
+        
 class ExpectimaxAgent(SearchAgent):
     """Assume uniform distribution for opponent"""
     def __init__(self, color, depth, eval_func=evaluate):

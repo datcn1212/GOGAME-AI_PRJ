@@ -83,7 +83,7 @@ class UI:
         pygame.init()
         pygame.display.set_caption('GO Game by CND_NHH')
         self.screen = pygame.display.set_mode((BOARD_WIDTH, BOARD_WIDTH))
-        self.background = pygame.image.load('BACKGROUND.jpg').convert()
+        #self.background = pygame.image.load('BACKGROUND.jpg').convert()
         self.ZOINK = pygame.mixer.Sound("wav/zoink.wav")
         self.CLICK = pygame.mixer.Sound("wav/click.wav")
         self.font = pygame.font.SysFont("arial", 30)

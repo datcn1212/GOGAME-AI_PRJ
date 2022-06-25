@@ -4,6 +4,8 @@ import pygame
 import time
 import sys
 
+from sqlalchemy import true
+
 from config_main import *
 from ui import *
 from agent.basic_agent import *
@@ -26,7 +28,6 @@ class Match:
         self.white_agent = white_agent
 
         self.board = Board(next_color = 'BLACK')
-        #self.size = size
 
         gui = gui if black_agent and white_agent else True
         self.ui = UI() if gui else None
@@ -155,37 +156,17 @@ class Match:
                             return point
 
 
-def get_args():
-    parser = ArgumentParser('Mini Go Game')
-    parser.add_argument('-b', '--black_agent', default = 'minimax',
-                        help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-w', '--white_agent', default = 'minimax',
-                        help='possible agents: random; greedy; minimax; expectimax, approx-q; DEFAULT is None (human)')
-    parser.add_argument('-d', '--search_depth', type=int, default = 3,
-                        help='the search depth for searching agents if applicable; DEFAULT is 1')
-    parser.add_argument('-g', '--gui', type=bool, default = True,
-                        help='if show GUI; always true if human plays; DEFAULT is True')
-    parser.add_argument('-s', '--dir_save', default = "img",
-                        help='if not None, save the image of last board state to this directory; DEFAULT is None')
-    # parser.add_argument('-si', '--size', type=int, default=19,
-    #                     help='size of the board; DEFAULT is 19')
-    return parser.parse_args()
-
-
-def get_agent(str_agent, color, depth):
-    if str_agent is None:
+def get_agent(agent, color, depth):
+    if agent == 0:
         return None
-    str_agent = str_agent.lower()
-    if str_agent == 'none':
-        return None
-    elif str_agent == 'random':
-        return RandomAgent(color)
-    elif str_agent == 'greedy':
-        return GreedyAgent(color)
-    elif str_agent == 'minimax':
-        return AlphaBetaAgent(color, depth=depth)
-    elif str_agent == 'expectimax':
-        return ExpectimaxAgent(color, depth=depth)
+    elif agent == 1:
+        return RandomAgent(color), 'Random Agent'
+    elif agent == 2:
+        return GreedyAgent(color), 'Greedy Agent'
+    elif agent == 3:
+        return MinimaxAgent(color, depth=depth), 'Minimax Agent'
+    elif agent == 4:
+        return AlphaBetaAgent(color, depth=depth), 'AlphaBeta Agent'
     # elif str_agent == 'approx-q':
     #     agent = ApproxQAgent(color, RlEnv())
     #     agent.load('agent/rl/ApproxQAgent.npy')
@@ -195,28 +176,49 @@ def get_agent(str_agent, color, depth):
 
 
 def main():
-    args = get_args()
-    depth = args.search_depth
-    black_agent = get_agent(args.black_agent, 'BLACK', depth)
-    white_agent = get_agent(args.white_agent, 'WHITE', depth)
-    gui = args.gui
-    dir_save = args.dir_save
-    #size = args.size
+    
+    print('\nLet\'s answer some questions! \n')
+    depth1 = depth2 = black_agent = white_agent = -1
+    
+    while black_agent not in [0,1,2,3,4]:
+        black_agent = int(input("Choose your agent for black - 0 (human); 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
+        if black_agent in [3,4]:
+            while depth1 <= 0:
+                depth1 = int(input("Choose depth for black agent (depth > 0): "))
+    black_agent = get_agent(black_agent,'BLACK',depth1)
+        
+    while white_agent not in [0,1,2,3,4]:
+        white_agent = int(input("Choose your agent for white - 0 (human); 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
+        if white_agent in [3,4]:
+            while depth2 <= 0:
+                depth2 = int(input("Choose depth for white agent (depth > 0): "))
+    white_agent = get_agent(white_agent,'WHITE',depth2)
+    
+    gg = 2
+    while gg not in [0, 1]: 
+        gg = int(input("play game with (1) or without (0) gui: "))
+    
+    dir_save = "img"
 
-    print('Agent for BLACK: ' + (str(black_agent) if black_agent else 'Human'))
-    print('Agent for WHITE: ' + (str(white_agent) if white_agent else 'Human'))
+    print('Agent for BLACK: ' + (str(black_agent[1]) if black_agent else 'Human'))
+    print('Agent for WHITE: ' + (str(white_agent[1]) if white_agent else 'Human'))
     if dir_save:
         print('Directory to save board image: ' + dir_save)
 
-    match = Match(black_agent=black_agent, white_agent=white_agent, gui=gui, dir_save=dir_save)
+    match = Match(black_agent[0], white_agent[0], gui = (True if gg==1 else False), dir_save = dir_save)
 
-    print('Match starts!')
-    match.start()
+    if gg == 1:
+        print('Match starts!')
+        match.start()
+        
+        #sound for black or white win: (need updating)
+        pygame.mixer.Sound("wav/zoink.wav").play()
+        pygame.time.wait(5000)
     
-    #sound for black or white win: (need updating)
-    pygame.mixer.Sound("wav/zoink.wav").play()
+    else:
+        print('Match starts without gui, please wait!')
+        match.start()
     
-    pygame.time.wait(5000)
     print(match.winner + ' wins!')
     print('Match ends in ' + str(round(match.time_elapsed,2)) + ' seconds')
     print('Match ends in ' + str(match.counter_move) + ' moves')
