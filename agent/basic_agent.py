@@ -1,14 +1,10 @@
-"""
-    basic agent for game: random, greedy
-"""
+"""basic agent for game: random, greedy"""
 
 import random
-from config_main import Board, opponent_color
-import random
-
+from config_main import *
 
 class Agent:
-    """Abstract stateless agent."""
+    
     def __init__(self, color):
         """
         :param color: 'BLACK' or 'WHITE'
@@ -27,7 +23,7 @@ class Agent:
 
 
 class RandomAgent(Agent):
-    """Pick a random action."""
+    
     def __init__(self, color):
         super().__init__(color)
 
@@ -37,6 +33,7 @@ class RandomAgent(Agent):
 
 
 class GreedyAgent(Agent):
+    
     """Pick the action that kills the liberty of most opponent's groups"""
     def __init__(self, color):
         super().__init__(color)
@@ -45,5 +42,8 @@ class GreedyAgent(Agent):
         actions = board.get_legal_actions()
         num_groups = [len(board.liberty_dict.get_groups(opponent_color(self.color), action)) for action in actions]
         max_num_groups = max(num_groups)
-        idx_candidates = [idx for idx, num in enumerate(num_groups) if num == max_num_groups]
-        return actions[random.choice(idx_candidates)] if actions else None
+        candidates = []
+        for action in actions:
+            if len(board.liberty_dict.get_groups(opponent_color(self.color), action)) == max_num_groups:
+                candidates.append(action)
+        return actions[random.choice(candidates)] if actions else None

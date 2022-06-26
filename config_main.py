@@ -60,21 +60,13 @@ class Group:
     def remove_liberty(self, point):
         self.liberties.remove(point)
 
-    def __str__(self):
-        """Summarize color, stones, liberties."""
-        return '%s - stones: [%s]; liberties: [%s]' % \
-               (self.color,
-                ', '.join([str(point) for point in self.points]),
-                ', '.join([str(point) for point in self.liberties]))
-
 
 class Board:
     """
     get_legal_actions(), generate_successor_state() ----external game interface.
-    put_stone() ---- main internal method that contains all logic to update game state.
+    put_stone() ----update game state, update winner or endangered groups
     create_group(), remove_group(), merge_groups() ----operations don't check winner or endangered groups.
-    put_stone() ----update winner or endangered groups
-    
+
     Winning criteria: remove any opponent's group, or no legal actions for opponent.
     """
     

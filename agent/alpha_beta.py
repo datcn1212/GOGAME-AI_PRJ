@@ -1,6 +1,4 @@
-"""
-    minimax with alpha-beta prunning
-"""
+"""minimax & alpha-beta prunning"""
 from agent.basic_agent import Agent
 import random
 from config_main import Board, opponent_color
