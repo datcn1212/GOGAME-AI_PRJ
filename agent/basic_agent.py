@@ -6,10 +6,7 @@ from config_main import *
 class Agent:
     
     def __init__(self, color):
-        """
-        :param color: 'BLACK' or 'WHITE'
-        """
-        self.color = color
+        self.color = color # 'BLACK' or 'WHITE'
 
     @classmethod
     def terminal_test(cls, board):
@@ -17,10 +14,6 @@ class Agent:
 
     def get_action(self, board: Board):
         raise NotImplementedError
-
-    def __str__(self):
-        return self.__class__.__name__ + '; color: ' + self.color
-
 
 class RandomAgent(Agent):
     
@@ -46,4 +39,4 @@ class GreedyAgent(Agent):
         for action in actions:
             if len(board.liberty_dict.get_groups(opponent_color(self.color), action)) == max_num_groups:
                 candidates.append(action)
-        return actions[random.choice(candidates)] if actions else None
+        return random.choice(candidates) if actions else None

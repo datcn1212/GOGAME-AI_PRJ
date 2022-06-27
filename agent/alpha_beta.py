@@ -1,9 +1,9 @@
 """minimax & alpha-beta prunning"""
 from agent.basic_agent import Agent
-import random
 from config_main import Board, opponent_color
 from agent.util_agent import get_num_endangered_groups, get_liberties, is_dangerous_liberty, get_num_groups_with_k_liberties
 from numpy.random import normal
+import random
 
 def evaluate(board: Board, color):
     """Color has the next action"""

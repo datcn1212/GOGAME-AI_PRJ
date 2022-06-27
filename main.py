@@ -4,15 +4,11 @@ import pygame
 import time
 import sys
 
-from sqlalchemy import true
-
 from config_main import *
 from ui import *
 from agent.basic_agent import *
 from agent.alpha_beta import *
 from os.path import join
-from argparse import ArgumentParser
-
 
 class Match:
     
@@ -200,8 +196,8 @@ def main():
     
     dir_save = "img"
 
-    print('Agent for BLACK: ' + (str(black_agent[1]) if black_agent else 'Human'))
-    print('Agent for WHITE: ' + (str(white_agent[1]) if white_agent else 'Human'))
+    print('Agent for BLACK: ' + black_agent[1])
+    print('Agent for WHITE: ' + white_agent[1])
     if dir_save:
         print('Directory to save board image: ' + dir_save)
 
