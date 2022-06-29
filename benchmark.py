@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
     # agent_oppo = RandomAgent('WHITE')
     # agent_oppo = GreedyAgent('WHITE')
-    agent_oppo = AlphaBetaAgent('BLACK', 3)
+    agent_oppo = MinimaxAgent('BLACK', 3)
 
     benchmark = Benchmark(agent_self=agent_self, agent_oppo=agent_oppo)
-    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(100, gui=True)
+    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(100, gui=False)
     print('Win rate: %f; Avg # moves: %f; Avg time: %f' % (win_mean, num_moves_mean, time_elapsed_mean))

@@ -90,6 +90,7 @@ class SearchAgent(Agent):
 
 
 class MinimaxAgent(SearchAgent):
+    
     def __init__(self, color, depth, eval_func=evaluate):
         super().__init__(color, depth, eval_func)
 
@@ -102,79 +103,64 @@ class MinimaxAgent(SearchAgent):
 
         return random.choice(actions) if len(actions) > 0 else None
 
-    # def minimax_value(self, board, depth, chooseMax):
-        
-    #     if self.terminal_test(board) or depth == self.depth:
-    #         return self.eval_func(board, self.color), []
-
-    #     legal_actions = board.get_legal_actions()
-        
-    #     if chooseMax == 1:
-    #         max_score = np.max([self.minimax_value(board.generate_successor_state(action), depth+1, 0)[0] for action in legal_actions])
-    #         max_score_actions = []
-    #         for action in legal_actions:
-    #             score = self.minimax_value(board.generate_successor_state(action), depth+1, 0)[0]
-    #             if score == max_score:
-    #                 max_score_actions += [action]
-    #         return max_score, max_score_actions
-                
-    #     else:
-    #         min_score = np.min([self.minimax_value(board.generate_successor_state(action), depth+1, 1)[0] for action in legal_actions])
-    #         min_score_actions = []
-    #         for action in legal_actions:
-    #             score = self.minimax_value(board.generate_successor_state(action), depth+1, 1)[0]
-    #             if score == min_score:
-    #                 min_score_actions += [action]
-    #         return min_score, min_score_actions
-    
     def max_value(self, board, depth):
-        """Return the highest score and the corresponding subsequent actions"""
+        
         if self.terminal_test(board) or depth == self.depth:
             return self.eval_func(board, self.color), []
 
         max_score = float("-inf")
-        max_score_actions = None
-        # Prune the legal actions
+        max_score_actions = []
+       
         legal_actions = board.get_legal_actions()
         
         for action in legal_actions:
             score, actions = self.min_value(board.generate_successor_state(action), depth+1)
             if score > max_score:
                 max_score = score
-                max_score_actions = [action] + actions
+                max_score_actions = [action] 
+            
+            if score == max_score:
+                max_score_actions.append(action)
 
         return max_score, max_score_actions
 
     def min_value(self, board, depth):
-        """Return the lowest score and the corresponding subsequent actions"""
+        
         if self.terminal_test(board) or depth == self.depth:
             return self.eval_func(board, self.color), []
 
         min_score = float("inf")
-        min_score_actions = None
-        # Prune the legal actions
+        min_score_actions = []
+        
         legal_actions = board.get_legal_actions()
         
         for action in legal_actions:
             score, actions = self.max_value(board.generate_successor_state(action), depth+1)
             if score < min_score:
                 min_score = score
-                min_score_actions = [action] + actions
+                min_score_actions = [action] 
+                
+            if score == min_score:
+                min_score_actions.append(action)
 
         return min_score, min_score_actions
 
 class AlphaBetaAgent(SearchAgent):
+    
     def __init__(self, color, depth, eval_func=evaluate):
         super().__init__(color, depth, eval_func)
 
     def get_action(self, board):
 
+        if len(board._get_legal_actions()) == 1:
+            return board._get_legal_actions()[0]
+        
         score, actions = self.max_value(board, 0, float("-inf"), float("inf"))
 
-        return actions[0] if len(actions) > 0 else None
+        return random.choice(actions) if len(actions) > 0 else None
 
     def max_value(self, board, depth, alpha, beta):
-        """Return the highest score and the corresponding subsequent actions"""
+        
         if self.terminal_test(board) or depth == self.depth:
             return self.eval_func(board, self.color), []
 
@@ -187,10 +173,13 @@ class AlphaBetaAgent(SearchAgent):
             score, actions = self.min_value(board.generate_successor_state(action), depth+1, alpha, beta)
             if score > max_score:
                 max_score = score
-                max_score_actions = [action] + actions
+                max_score_actions = [action] 
+                
+            if score == max_score:
+                max_score_actions.append(action)
 
             if max_score > beta:
-                return max_score, max_score_actions
+                return max_score, max_score_actions  # prunning
 
             if max_score > alpha:
                 alpha = max_score
@@ -198,23 +187,27 @@ class AlphaBetaAgent(SearchAgent):
         return max_score, max_score_actions
 
     def min_value(self, board, depth, alpha, beta):
-        """Return the lowest score and the corresponding subsequent actions"""
+        
         if self.terminal_test(board) or depth == self.depth:
             return self.eval_func(board, self.color), []
 
         min_score = float("inf")
-        min_score_actions = None
+        min_score_actions = []
        
         legal_actions = board.get_legal_actions()
        
         for action in legal_actions:
             score, actions = self.max_value(board.generate_successor_state(action), depth+1, alpha, beta)
+            
             if score < min_score:
                 min_score = score
-                min_score_actions = [action] + actions
+                min_score_actions = [action]
+            
+            if score == min_score:
+                min_score_actions.append(action)
 
             if min_score < alpha:
-                return min_score, min_score_actions
+                return min_score, min_score_actions  #prunning
 
             if min_score < beta:
                 beta = min_score
