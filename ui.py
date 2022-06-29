@@ -105,16 +105,13 @@ class UI:
     # draw stone each turn
     def draw(self, point, color, size = STONE_RADIUS):
         color = get_rgb(color)
-        self.CLICK.play() # sound of click
+        if color == (0,0,0) or color == (255,255,255):
+            self.CLICK.play() # sound of click
         pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], size), size, 0)
         pygame.display.update()
 
     # remove a stone - draw a red stone (or red legal action in previous step)
     def remove(self, point, size):
-        # blt = -inc/2 + BOARD_BORDER + point[0] * inc, -inc/2 + BOARD_BORDER + point[1] * inc  # top_left-conner point
-        # area_rect = pygame.Rect(blt, (inc, inc))
-        # self.screen.blit(self.background, blt, area_rect)
-        # pygame.display.update()
         color = (255,0,0)  # Red
         pygame.draw.circle(self.screen, color, colrow_to_xy(point[0], point[1], size), size, 0)
         pygame.display.update()

@@ -1,8 +1,6 @@
 from main import Match
-from agent.basic_agent import RandomAgent, GreedyAgent
-from agent.alpha_beta import AlphaBetaAgent, ExpectimaxAgent
-# from agent.rl.rl_agent import ApproxQAgent
-# from agent.rl.rl_env import RlEnv
+from agent.basic_agent import *
+from agent.alpha_beta import *
 from statistics import mean
 
 
@@ -30,7 +28,7 @@ class Benchmark:
         list_num_moves = []
         list_time_elapsed = []
 
-        for i in range(num_tests):
+        for i in range(1,num_tests+1):
             print('Running game %d: ' % i, end='')
             match = self.create_match(gui=gui)
             match.start()

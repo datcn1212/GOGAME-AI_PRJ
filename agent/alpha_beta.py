@@ -1,12 +1,13 @@
 """minimax & alpha-beta prunning"""
+
 from agent.basic_agent import Agent
 from config_main import Board, opponent_color
-from agent.util_agent import get_num_endangered_groups, get_liberties, is_dangerous_liberty, get_num_groups_with_k_liberties
+from agent.util_agent import num_endangeredgroups, get_liberties, is_dangerous_liberty, num_k_liberties_groups
 from numpy.random import normal
 import random
+import numpy as np
 
-def evaluate(board: Board, color):
-    """Color has the next action"""
+def evaluate(board: Board, color):  # color has the next action
     # Score for win or lose
     score_win = 1000 - board.counter_move  # Prefer faster game
     if board.winner:
@@ -14,7 +15,7 @@ def evaluate(board: Board, color):
 
     oppo = opponent_color(color)
     # Score for endangered groups
-    num_endangered_self, num_endangered_oppo = get_num_endangered_groups(board, color)
+    num_endangered_self, num_endangered_oppo = num_endangeredgroups(board, color)
     if num_endangered_oppo > 0:
         return score_win - 10  # Win in the next move
     elif num_endangered_self > 1:
@@ -24,21 +25,23 @@ def evaluate(board: Board, color):
     liberties_self, liberties_oppo = get_liberties(board, color)
     for liberty in liberties_oppo:
         if is_dangerous_liberty(board, liberty, oppo):
-            return score_win / 2  # Good probability to win in the next next move
+            return score_win / 2 
+            # Good probability to win in the next next move by putting stone in this dangerous liberty
+            
     for liberty in liberties_self:
         if is_dangerous_liberty(board, liberty, color):
             self_groups = board.liberty_dict.get_groups(color, liberty)
             liberties = self_groups[0].liberties | self_groups[1].liberties
-            able_to_save = False
+            save = False
             for lbt in liberties:
                 if len(board.liberty_dict.get_groups(oppo, lbt)) > 0:
-                    able_to_save = True
-                    break
-            if not able_to_save:
+                    save = True
+                    break                                                                                                                                                                                                     
+            if not save:
                 return -score_win / 2  # Good probability to lose in the next next move
 
     # Score for groups
-    num_groups_2lbt_self, num_groups_2lbt_oppo = get_num_groups_with_k_liberties(board, color, 2)
+    num_groups_2lbt_self, num_groups_2lbt_oppo = num_k_liberties_groups(board, color, 2)
     score_groups = num_groups_2lbt_oppo - num_groups_2lbt_self
 
     # Score for liberties
@@ -67,7 +70,6 @@ def evaluate(board: Board, color):
 
     return score_groups * normal(1, 0.1) + score_liberties * normal(1, 0.1)
 
-
 class SearchAgent(Agent):
     def __init__(self, color, depth, eval_func):
         """
@@ -87,13 +89,86 @@ class SearchAgent(Agent):
         return '%s; color: %s; search_depth: %d' % (self.__class__.__name__, self.color, self.depth)
 
 
+class MinimaxAgent(SearchAgent):
+    def __init__(self, color, depth, eval_func=evaluate):
+        super().__init__(color, depth, eval_func)
+
+    def get_action(self, board):
+        
+        if len(board._get_legal_actions()) == 1:
+            return board._get_legal_actions()[0]
+        
+        score, actions = self.max_value(board, 0)
+
+        return random.choice(actions) if len(actions) > 0 else None
+
+    # def minimax_value(self, board, depth, chooseMax):
+        
+    #     if self.terminal_test(board) or depth == self.depth:
+    #         return self.eval_func(board, self.color), []
+
+    #     legal_actions = board.get_legal_actions()
+        
+    #     if chooseMax == 1:
+    #         max_score = np.max([self.minimax_value(board.generate_successor_state(action), depth+1, 0)[0] for action in legal_actions])
+    #         max_score_actions = []
+    #         for action in legal_actions:
+    #             score = self.minimax_value(board.generate_successor_state(action), depth+1, 0)[0]
+    #             if score == max_score:
+    #                 max_score_actions += [action]
+    #         return max_score, max_score_actions
+                
+    #     else:
+    #         min_score = np.min([self.minimax_value(board.generate_successor_state(action), depth+1, 1)[0] for action in legal_actions])
+    #         min_score_actions = []
+    #         for action in legal_actions:
+    #             score = self.minimax_value(board.generate_successor_state(action), depth+1, 1)[0]
+    #             if score == min_score:
+    #                 min_score_actions += [action]
+    #         return min_score, min_score_actions
+    
+    def max_value(self, board, depth):
+        """Return the highest score and the corresponding subsequent actions"""
+        if self.terminal_test(board) or depth == self.depth:
+            return self.eval_func(board, self.color), []
+
+        max_score = float("-inf")
+        max_score_actions = None
+        # Prune the legal actions
+        legal_actions = board.get_legal_actions()
+        
+        for action in legal_actions:
+            score, actions = self.min_value(board.generate_successor_state(action), depth+1)
+            if score > max_score:
+                max_score = score
+                max_score_actions = [action] + actions
+
+        return max_score, max_score_actions
+
+    def min_value(self, board, depth):
+        """Return the lowest score and the corresponding subsequent actions"""
+        if self.terminal_test(board) or depth == self.depth:
+            return self.eval_func(board, self.color), []
+
+        min_score = float("inf")
+        min_score_actions = None
+        # Prune the legal actions
+        legal_actions = board.get_legal_actions()
+        
+        for action in legal_actions:
+            score, actions = self.max_value(board.generate_successor_state(action), depth+1)
+            if score < min_score:
+                min_score = score
+                min_score_actions = [action] + actions
+
+        return min_score, min_score_actions
+
 class AlphaBetaAgent(SearchAgent):
     def __init__(self, color, depth, eval_func=evaluate):
         super().__init__(color, depth, eval_func)
 
-    def get_action(self, board, pruning_actions=20):
+    def get_action(self, board):
 
-        self.pruning_actions = pruning_actions
         score, actions = self.max_value(board, 0, float("-inf"), float("inf"))
 
         return actions[0] if len(actions) > 0 else None
@@ -105,13 +180,11 @@ class AlphaBetaAgent(SearchAgent):
 
         max_score = float("-inf")
         max_score_actions = None
-        # Prune the legal actions
+        
         legal_actions = board.get_legal_actions()
-        if self.pruning_actions and len(legal_actions) > self.pruning_actions:
-            legal_actions = random.sample(legal_actions, self.pruning_actions)
-
+        
         for action in legal_actions:
-            score, actions = self.min_value(board.generate_successor_state(action), depth, alpha, beta)
+            score, actions = self.min_value(board.generate_successor_state(action), depth+1, alpha, beta)
             if score > max_score:
                 max_score = score
                 max_score_actions = [action] + actions
@@ -131,11 +204,9 @@ class AlphaBetaAgent(SearchAgent):
 
         min_score = float("inf")
         min_score_actions = None
-        # Prune the legal actions
+       
         legal_actions = board.get_legal_actions()
-        if self.pruning_actions and len(legal_actions) > self.pruning_actions:
-            legal_actions = random.sample(legal_actions, self.pruning_actions)
-
+       
         for action in legal_actions:
             score, actions = self.max_value(board.generate_successor_state(action), depth+1, alpha, beta)
             if score < min_score:
@@ -149,52 +220,3 @@ class AlphaBetaAgent(SearchAgent):
                 beta = min_score
 
         return min_score, min_score_actions
-
-class MinimaxAgent(SearchAgent):
-    def __init__(self, color, depth, eval_func=evaluate):
-        super().__init__(color, depth, eval_func)
-        
-class ExpectimaxAgent(SearchAgent):
-    """Assume uniform distribution for opponent"""
-    def __init__(self, color, depth, eval_func=evaluate):
-        super().__init__(color, depth, eval_func)
-
-    def get_action(self, board, pruning_actions=16):
-        self.pruning_actions = pruning_actions
-        score, actions = self.max_value(board, 0)
-        return actions[0] if len(actions) > 0 else None
-
-    def max_value(self, board, depth):
-        if self.terminal_test(board) or depth == self.depth:
-            return self.eval_func(board, self.color), []
-
-        max_score = float("-inf")
-        max_score_actions = None
-        # Prune the legal actions
-        legal_actions = board.get_legal_actions()
-        if self.pruning_actions and len(legal_actions) > self.pruning_actions:
-            legal_actions = random.sample(legal_actions, self.pruning_actions)
-
-        for action in legal_actions:
-            score, actions = self.expected_value(board.generate_successor_state(action), depth)
-            if score > max_score:
-                max_score = score
-                max_score_actions = [action] + actions
-
-        return max_score, max_score_actions
-
-    def expected_value(self, board, depth):
-        if self.terminal_test(board) or depth == self.depth:
-            return self.eval_func(board, self.color), []
-
-        expected_score = 0.0
-        # Prune the legal actions
-        legal_actions = board.get_legal_actions()
-        if self.pruning_actions and len(legal_actions) > self.pruning_actions:
-            legal_actions = random.sample(legal_actions, self.pruning_actions)
-
-        for action in legal_actions:
-            score, actions = self.max_value(board.generate_successor_state(action), depth+1)
-            expected_score += score / len(legal_actions)
-
-        return expected_score, []

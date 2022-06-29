@@ -1,8 +1,10 @@
-from config_main import Board, opponent_color, Group
+"""utilities for agents"""
+
+from config_main import *
 import numpy as np
 
-
-def get_num_endangered_groups(board: Board, color):
+# number of endangered groups
+def num_endangeredgroups(board: Board, color):
     num_endangered_self = 0
     num_endangered_oppo = 0
     for group in board.endangered_groups:
@@ -12,19 +14,19 @@ def get_num_endangered_groups(board: Board, color):
             num_endangered_oppo += 1
     return num_endangered_self, num_endangered_oppo
 
-
-def get_num_groups_with_k_liberties(board: Board, color, k):
-    num_groups_self = 0
-    num_groups_oppo = 0
+# number of groups which has k liberties
+def num_k_liberties_groups(board: Board, color, k):
+    num_self = 0
+    num_oppo = 0
     for group in board.groups[color]:
         if group.num_liberty == k:
-            num_groups_self += 1
+            num_self += 1
     for group in board.groups[opponent_color(color)]:
         if group.num_liberty == k:
-            num_groups_oppo += 1
-    return num_groups_self, num_groups_oppo
+            num_oppo += 1
+    return num_self, num_oppo
 
-
+# get all liberties for each color
 def get_liberties(board: Board, color):
     liberties_self = set()
     liberties_oppo = set()
@@ -34,7 +36,7 @@ def get_liberties(board: Board, color):
         liberties_oppo = liberties_oppo | group.liberties
     return liberties_self, liberties_oppo
 
-
+# 2 groups have this liberty, each has 2 liberties
 def is_dangerous_liberty(board: Board, point, color):
     self_groups = board.liberty_dict.get_groups(color, point)
     return len(self_groups) == 2 and self_groups[0].num_liberty == 2 and self_groups[1].num_liberty == 2
@@ -54,9 +56,7 @@ def eval_group(group: Group, board: Board):
         return 5
 
     # Till here, group has either 2 or 3 liberties.
-    var_x = np.var([x[0] for x in group.liberties])
-    var_y = np.var([x[1] for x in group.liberties])
-    var_sum = var_x + var_y
+    var_sum = calc_group_liberty_var(group)
     if var_sum < 0.1:
         print('var_sum < 0.1')
 
@@ -76,9 +76,9 @@ def eval_group(group: Group, board: Board):
     else:
         score = 1/np.sqrt(group.num_liberty)/var_sum/6.
         if np.sqrt(group.num_liberty)<1.1:
-            print('fuck!', group.num_liberty, board.winner)
+            print(group.num_liberty, board.winner)
         if var_sum<0.2:
-            print('shit!')
+            print('!')
     return score
 
 
