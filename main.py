@@ -8,6 +8,7 @@ from config_main import *
 from ui import *
 from agent.basic_agent import *
 from agent.alpha_beta import *
+from agent.rl_agent import *
 from os.path import join
 
 class Match:
@@ -163,10 +164,10 @@ def get_agent(agent, color, depth):
         return MinimaxAgent(color, depth=depth), 'Minimax Agent'
     elif agent == 4:
         return AlphaBetaAgent(color, depth=depth), 'AlphaBeta Agent'
-    # elif str_agent == 'approx-q':
-    #     agent = ApproxQAgent(color, RlEnv())
-    #     agent.load('agent/rl/ApproxQAgent.npy')
-    #     return agent
+    elif agent == 5:
+        agent = ApproxQAgent(color, RlEnv())
+        agent.load('ApproxQAgent.npy')
+        return agent, 'RL Agent'
     else:
         raise ValueError('Invalid agent for ' + color)
 
@@ -176,14 +177,14 @@ def main():
     print('\nLet\'s answer some questions! \n')
     depth1 = depth2 = black_agent = white_agent = -1
     
-    while black_agent not in [0,1,2,3,4]:
+    while black_agent not in [0,1,2,3,4,5]:
         black_agent = int(input("Choose your agent for black - 0 (human); 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
         if black_agent in [3,4]:
             while depth1 <= 0:
                 depth1 = int(input("Choose depth for black agent (depth > 0): "))
     black_agent = get_agent(black_agent,'BLACK',depth1)
         
-    while white_agent not in [0,1,2,3,4]:
+    while white_agent not in [0,1,2,3,4,5]:
         white_agent = int(input("Choose your agent for white - 0 (human); 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
         if white_agent in [3,4]:
             while depth2 <= 0:

@@ -53,21 +53,6 @@ def evaluate(board: Board, color):  # color has the next action
         num_shared_liberties_oppo += len(board.liberty_dict.get_groups(oppo, liberty)) - 1
     score_liberties = num_shared_liberties_oppo - num_shared_liberties_self
 
-    # Score for groups (doesn't help)
-    # score_groups_self = []
-    # score_groups_oppo = []
-    # for group in board.groups[color]:
-        # if group.num_liberty > 1:
-            # score_groups_self.append(eval_group(group, board))
-    # for group in board.groups[opponent_color(color)]:
-        # if group.num_liberty > 1:
-            # score_groups_oppo.append(eval_group(group, board))
-    # score_groups_self.sort(reverse=True)
-    # score_groups_self += [0, 0]
-    # score_groups_oppo.sort(reverse=True)
-    # score_groups_oppo += [0, 0]
-    # finals = score_groups_oppo[0] - score_groups_self[0] + score_groups_oppo[1] - score_groups_self[1]
-
     return score_groups * normal(1, 0.1) + score_liberties * normal(1, 0.1)
 
 class SearchAgent(Agent):
@@ -157,7 +142,7 @@ class AlphaBetaAgent(SearchAgent):
         
         score, actions = self.max_value(board, 0, float("-inf"), float("inf"))
 
-        return random.choice(actions) if len(actions) > 0 else None
+        return actions[0] if len(actions) > 0 else None
 
     def max_value(self, board, depth, alpha, beta):
         
@@ -168,18 +153,15 @@ class AlphaBetaAgent(SearchAgent):
         max_score_actions = None
         
         legal_actions = board.get_legal_actions()
-        
+
         for action in legal_actions:
             score, actions = self.min_value(board.generate_successor_state(action), depth+1, alpha, beta)
             if score > max_score:
                 max_score = score
-                max_score_actions = [action] 
-                
-            if score == max_score:
-                max_score_actions.append(action)
+                max_score_actions = [action]
 
             if max_score > beta:
-                return max_score, max_score_actions  # prunning
+                return max_score, max_score_actions  #prunning
 
             if max_score > alpha:
                 alpha = max_score
@@ -192,19 +174,15 @@ class AlphaBetaAgent(SearchAgent):
             return self.eval_func(board, self.color), []
 
         min_score = float("inf")
-        min_score_actions = []
-       
+        min_score_actions = None
+        
         legal_actions = board.get_legal_actions()
-       
+    
         for action in legal_actions:
             score, actions = self.max_value(board.generate_successor_state(action), depth+1, alpha, beta)
-            
             if score < min_score:
                 min_score = score
                 min_score_actions = [action]
-            
-            if score == min_score:
-                min_score_actions.append(action)
 
             if min_score < alpha:
                 return min_score, min_score_actions  #prunning

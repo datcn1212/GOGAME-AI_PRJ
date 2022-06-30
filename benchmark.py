@@ -1,6 +1,7 @@
 from main import Match
 from agent.basic_agent import *
 from agent.alpha_beta import *
+from agent.rl_agent import *
 from statistics import mean
 
 
@@ -45,17 +46,20 @@ class Benchmark:
 
 
 if __name__ == '__main__':
-    # agent_self = RandomAgent('BLACK')
-    agent_self = GreedyAgent('WHITE')
-    # agent_self = AlphaBetaAgent('BLACK', 1)
-    # agent_self = ExpectimaxAgent('BLACK', 1)
-    #agent_self = ApproxQAgent('WHITE', RlEnv())
-    #agent_self.load('agent/rl/ApproxQAgent.npy')
+    # agent_self = MinimaxAgent('BLACK',4)
+    # agent_self = ApproxQAgent('BLACK', RlEnv())
+    # agent_self.load('ApproxQAgent.npy')
+    agent_self = AlphaBetaAgent('BLACK', 4)
+    # agent_self = GreedyAgent('BLACK')
+    
 
     # agent_oppo = RandomAgent('WHITE')
     # agent_oppo = GreedyAgent('WHITE')
-    agent_oppo = MinimaxAgent('BLACK', 3)
+    # agent_oppo = AlphaBetaAgent('WHITE',2)
+    # agent_oppo = AlphaBetaAgent('BLACK', 4)
+    agent_oppo = ApproxQAgent('WHITE', RlEnv())
+    agent_oppo.load('ApproxQAgent.npy')
 
     benchmark = Benchmark(agent_self=agent_self, agent_oppo=agent_oppo)
-    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(100, gui=False)
+    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(20, gui=1)
     print('Win rate: %f; Avg # moves: %f; Avg time: %f' % (win_mean, num_moves_mean, time_elapsed_mean))
