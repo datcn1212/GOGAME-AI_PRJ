@@ -40,5 +40,3 @@ def get_liberties(board: Board, color):
 def is_dangerous_liberty(board: Board, point, color):
     self_groups = board.liberty_dict.get_groups(color, point)
     return len(self_groups) == 2 and self_groups[0].num_liberty == 2 and self_groups[1].num_liberty == 2
-
-
