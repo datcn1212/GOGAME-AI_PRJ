@@ -155,7 +155,7 @@ class Match:
 
 def get_agent(agent, color, depth):
     if agent == 0:
-        return None
+        return None, 'HUMAN'
     elif agent == 1:
         return RandomAgent(color), 'Random Agent'
     elif agent == 2:

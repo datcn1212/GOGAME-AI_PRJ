@@ -54,12 +54,12 @@ if __name__ == '__main__':
     
 
     # agent_oppo = RandomAgent('WHITE')
-    # agent_oppo = GreedyAgent('WHITE')
+    agent_oppo = GreedyAgent('WHITE')
     # agent_oppo = AlphaBetaAgent('WHITE',2)
     # agent_oppo = AlphaBetaAgent('BLACK', 4)
-    agent_oppo = ApproxQAgent('WHITE', RlEnv())
-    agent_oppo.load('ApproxQAgent.npy')
+    # agent_oppo = ApproxQAgent('WHITE', RlEnv())
+    # agent_oppo.load('ApproxQAgent.npy')
 
     benchmark = Benchmark(agent_self=agent_self, agent_oppo=agent_oppo)
-    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(20, gui=1)
+    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(20, gui=0)
     print('Win rate: %f; Avg # moves: %f; Avg time: %f' % (win_mean, num_moves_mean, time_elapsed_mean))

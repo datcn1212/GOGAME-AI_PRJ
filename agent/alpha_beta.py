@@ -86,7 +86,7 @@ class MinimaxAgent(SearchAgent):
         
         score, actions = self.max_value(board, 0)
 
-        return random.choice(actions) if len(actions) > 0 else None
+        return actions[0] if len(actions) > 0 else None
 
     def max_value(self, board, depth):
         
@@ -103,9 +103,6 @@ class MinimaxAgent(SearchAgent):
             if score > max_score:
                 max_score = score
                 max_score_actions = [action] 
-            
-            if score == max_score:
-                max_score_actions.append(action)
 
         return max_score, max_score_actions
 
@@ -125,9 +122,6 @@ class MinimaxAgent(SearchAgent):
                 min_score = score
                 min_score_actions = [action] 
                 
-            if score == min_score:
-                min_score_actions.append(action)
-
         return min_score, min_score_actions
 
 class AlphaBetaAgent(SearchAgent):

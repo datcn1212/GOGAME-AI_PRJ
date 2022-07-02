@@ -140,13 +140,6 @@ class Board:
             self.liberty_dict.get_groups(color, liberty).remove(group)
 
     def merge_groups(self, grouplist, point):
-        """
-        Merge groups (assuming same color).
-        all groups already have this liberty removed;
-        liberty_dict already has this point removed.
-        :param grouplist:
-        :param point:
-        """
         color = grouplist[0].color
         newgroup = grouplist[0]
         all_liberties = grouplist[0].liberties
@@ -224,7 +217,7 @@ class Board:
 
         return legal_actions_fixed
 
-    def _shorten_liberty(self, group, point, color):
+    def shorten_liberty(self, group, point, color):
         group.remove_liberty(point)
         if group.color != color:  # If opponent's group, check if winning or endangered groups
             if len(group.liberties) == 0:  # The new stone is opponent's, check if winning
@@ -245,13 +238,13 @@ class Board:
         # Check opponent's groups first
         opponent = opponent_color(color)
         for group in self.liberty_dict.get_groups(opponent, point):
-            self._shorten_liberty(group, point, color)
+            self.shorten_liberty(group, point, color)
         self.liberty_dict.remove_point(opponent, point)  # update liberty_dict
 
         # If any opponent's group dies, no need to check self group
         if not self.winner:
             for group in self.liberty_dict.get_groups(color, point):
-                self._shorten_liberty(group, point, color)
+                self.shorten_liberty(group, point, color)
         self.liberty_dict.remove_point(color, point)  # update liberty_dict
     
     def put_stone(self, point, check_legal=False):
