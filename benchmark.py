@@ -44,22 +44,48 @@ class Benchmark:
         time_elapsed_mean = mean(list_time_elapsed)
         return win_mean, num_moves_mean, time_elapsed_mean
 
+def get_agent(agent, color, depth):
+    if agent == 0:
+        return None, 'HUMAN'
+    elif agent == 1:
+        return RandomAgent(color), 'Random Agent'
+    elif agent == 2:
+        return GreedyAgent(color), 'Greedy Agent'
+    elif agent == 3:
+        return MinimaxAgent(color, depth=depth), 'Minimax Agent'
+    elif agent == 4:
+        return AlphaBetaAgent(color, depth=depth), 'AlphaBeta Agent'
+    elif agent == 5:
+        agent = ApproxQAgent(color, RlEnv())
+        agent.load('ApproxQAgent.npy')
+        return agent, 'RL Agent'
+    else:
+        raise ValueError('Invalid agent for ' + color)
 
 if __name__ == '__main__':
-    # agent_self = MinimaxAgent('BLACK',4)
-    # agent_self = ApproxQAgent('BLACK', RlEnv())
-    # agent_self.load('ApproxQAgent.npy')
-    agent_self = AlphaBetaAgent('BLACK', 4)
-    # agent_self = GreedyAgent('BLACK')
     
+    depth1 = depth2 = agent_self = agent_oppo = -1
+    
+    while agent_self not in [0,1,2,3,4,5]:
+        agent_self = int(input("Choose your agent for self(black) - 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
+        if agent_self in [3,4]:
+            while depth1 <= 0:
+                depth1 = int(input("Choose depth for black agent (depth > 0): "))
+    agent_self = get_agent(agent_self,'BLACK',depth1)
+        
+    while agent_oppo not in [0,1,2,3,4,5]:
+        agent_oppo = int(input("Choose your agent for opponent(white) - 1 (random); 2 (greedy); 3 (minimax); 4 (alpha-beta prunning) : "))
+        if agent_oppo in [3,4]:
+            while depth2 <= 0:
+                depth2 = int(input("Choose depth for white agent (depth > 0): "))
+    agent_oppo = get_agent(agent_oppo,'WHITE',depth2)
+    
+    gg = 2
+    while gg not in [0, 1]: 
+        gg = int(input("play game with (1) or without (0) gui: "))
 
-    # agent_oppo = RandomAgent('WHITE')
-    agent_oppo = GreedyAgent('WHITE')
-    # agent_oppo = AlphaBetaAgent('WHITE',2)
-    # agent_oppo = AlphaBetaAgent('BLACK', 4)
-    # agent_oppo = ApproxQAgent('WHITE', RlEnv())
-    # agent_oppo.load('ApproxQAgent.npy')
-
-    benchmark = Benchmark(agent_self=agent_self, agent_oppo=agent_oppo)
-    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(100, gui=0)
+    benchmark = Benchmark(agent_self[0], agent_oppo[0])
+    win_mean, num_moves_mean, time_elapsed_mean = benchmark.run_benchmark(100, gui=gg)
+    print("Self agent: ", agent_self[1])
+    print("Opponent agent: ", agent_oppo[1])
     print('Win rate: %f; Avg # moves: %f; Avg time: %f' % (win_mean, num_moves_mean, time_elapsed_mean))
