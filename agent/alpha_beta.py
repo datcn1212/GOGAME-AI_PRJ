@@ -26,7 +26,7 @@ def evaluate(board: Board, color):  # color has the next action
     for liberty in liberties_oppo:
         if is_dangerous_liberty(board, liberty, oppo):
             return score_win - 1
-            # Good probability to win in the next next move by putting stone in this dangerous liberty
+            # Win in the next move by putting stone in this dangerous liberty
             
     for liberty in liberties_self:
         if is_dangerous_liberty(board, liberty, color):
@@ -38,7 +38,7 @@ def evaluate(board: Board, color):  # color has the next action
                     save = True
                     break                                                                                                                                                                                                     
             if not save:
-                return -score_win / 2  # Good probability to lose in the next next move
+                return - (score_win - 1)  # Good probability to lose in the next next move
 
     # Score for groups
     num_groups_2lbt_self, num_groups_2lbt_oppo = num_k_liberties_groups(board, color, 2)
@@ -48,9 +48,9 @@ def evaluate(board: Board, color):  # color has the next action
     num_shared_liberties_self = 0
     num_shared_liberties_oppo = 0
     for liberty in liberties_self:
-        num_shared_liberties_self += len(board.liberty_dict.get_groups(color, liberty)) - 1
+        num_shared_liberties_self += len(board.liberty_dict.get_groups(color, liberty)) - 1 # = all self liberties - all self groups
     for liberty in liberties_oppo:
-        num_shared_liberties_oppo += len(board.liberty_dict.get_groups(oppo, liberty)) - 1
+        num_shared_liberties_oppo += len(board.liberty_dict.get_groups(oppo, liberty)) - 1 # = all opponent liberties - all opponent groups
     score_liberties = num_shared_liberties_oppo - num_shared_liberties_self
 
     return score_groups * normal(1, 0.1) + score_liberties * normal(1, 0.1)
