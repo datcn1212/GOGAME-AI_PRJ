@@ -1,8 +1,8 @@
-# GOGAME-AI_PRJ
-Project for AI subject - Game Go
+# MINIGO - AI_PRJ
+Project for AI subject - MiniGo
 
 ## How to run?
-Step 0: Set up Python environment & install modules: numpy, pygame </p>
+Step 0: Set up Python environment & install modules: numpy, pygame, itertools </p>
 Step 1: Clone this repository or download zip & unzip </p>
 Step 2: Run file "main.py" </p>
         Choose agent for black and white, if you choose '3' or '4' (minimax, alpha-beta prunning), you will be asked to choose depth </p>
