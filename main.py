@@ -56,11 +56,14 @@ class Match:
     def _start_with_ui(self):
         self.ui.init_pygame() # draw board, gridlines, guide dots
         self.time_elapsed = time.time() # time at game starting
-
+        
         # First move - center of board
         first_move = (9, 9)
         self.board.put_stone(first_move, check_legal = False)
         self.ui.draw(first_move, opponent_color(self.board.next))
+        
+        for action in self.board.legal_actions:
+                    self.ui.draw(action, 'BLUE', 5)
 
         # Take turns to play move
         while self.board.winner is None:

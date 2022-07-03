@@ -81,7 +81,7 @@ class UI:
 
     def init_pygame(self):
         pygame.init()
-        pygame.display.set_caption('GO Game by CND_NHH')
+        pygame.display.set_caption('MiniGO')
         self.screen = pygame.display.set_mode((BOARD_WIDTH, BOARD_WIDTH))
         #self.background = pygame.image.load('BACKGROUND.jpg').convert()
         self.ZOINK = pygame.mixer.Sound("wav/zoink.wav")
@@ -119,7 +119,6 @@ class UI:
     #save the image of the game
     def save_image(self, path_to_save):
         pygame.image.save(self.screen, path_to_save)
-        
         
 
     

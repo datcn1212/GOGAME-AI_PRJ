@@ -17,15 +17,15 @@ def evaluate(board: Board, color):  # color has the next action
     # Score for endangered groups
     num_endangered_self, num_endangered_oppo = num_endangeredgroups(board, color)
     if num_endangered_oppo > 0:
-        return score_win - 10  # Win in the next move
+        return score_win - 1  # Win in the next move
     elif num_endangered_self > 1:
-        return -(score_win - 10)  # Lose in the next move
+        return -(score_win - 1)  # Lose in the next move
 
     # Score for dangerous liberties
     liberties_self, liberties_oppo = get_liberties(board, color)
     for liberty in liberties_oppo:
         if is_dangerous_liberty(board, liberty, oppo):
-            return score_win / 2 
+            return score_win - 1
             # Good probability to win in the next next move by putting stone in this dangerous liberty
             
     for liberty in liberties_self:
@@ -54,6 +54,55 @@ def evaluate(board: Board, color):  # color has the next action
     score_liberties = num_shared_liberties_oppo - num_shared_liberties_self
 
     return score_groups * normal(1, 0.1) + score_liberties * normal(1, 0.1)
+
+# def evaluate2(board: Board, color):  # color has the next action
+#     # Score for win or lose
+#     score_win = 1000 - board.counter_move  # Prefer faster game
+#     if board.winner:
+#         return score_win if board.winner == color else -score_win
+
+#     oppo = opponent_color(color)
+#     # Score for endangered groups
+#     num_endangered_self, num_endangered_oppo = num_endangeredgroups(board, color)
+#     if num_endangered_oppo > 0:
+#         return score_win - 10  # Win in the next move
+#     elif num_endangered_self > 1:
+#         return -(score_win - 10)  # Lose in the next move
+
+#     # Score for dangerous liberties
+#     liberties_self, liberties_oppo = get_liberties(board, color)
+#     for liberty in liberties_oppo:
+#         if is_dangerous_liberty(board, liberty, oppo):
+#             return score_win /2
+#             # Good probability to win in the next next move by putting stone in this dangerous liberty
+            
+#     for liberty in liberties_self:
+#         if is_dangerous_liberty(board, liberty, color):
+#             self_groups = board.liberty_dict.get_groups(color, liberty)
+#             liberties = self_groups[0].liberties | self_groups[1].liberties
+#             save = False
+#             for lbt in liberties:
+#                 if len(board.liberty_dict.get_groups(oppo, lbt)) > 0:
+#                     save = True
+#                     break                                                                                                                                                                                                     
+#             if not save:
+#                 return -score_win /2  # Good probability to lose in the next next move
+
+#     # Score for groups
+#     num_groups_2lbt_self, num_groups_2lbt_oppo = num_k_liberties_groups(board, color, 2)
+#     score_groups = num_groups_2lbt_oppo - num_groups_2lbt_self
+
+#     # Score for liberties
+#     num_shared_liberties_self = 0
+#     num_shared_liberties_oppo = 0
+#     for liberty in liberties_self:
+#         num_shared_liberties_self += len(board.liberty_dict.get_groups(color, liberty)) - 1
+#     for liberty in liberties_oppo:
+#         num_shared_liberties_oppo += len(board.liberty_dict.get_groups(oppo, liberty)) - 1
+#     score_liberties = num_shared_liberties_oppo - num_shared_liberties_self
+
+#     return score_groups * normal(1, 0.1) + score_liberties * normal(1, 0.1)
+
 
 class SearchAgent(Agent):
     def __init__(self, color, depth, eval_func):
