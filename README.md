@@ -1,5 +1,6 @@
 # MINIGO - AI_PRJ
-Project for AI subject - MiniGo
+Project for AI subject - MiniGo </p>
+Note: You should read the report above to understand how to play Go!
 
 ## How to run?
 Step 0: Set up Python environment & install modules: numpy, pygame, itertools </p>
