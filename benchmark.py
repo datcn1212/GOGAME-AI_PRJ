@@ -1,7 +1,7 @@
 from main import Match
 from agent.basic_agent import *
 from agent.alpha_beta import *
-from agent.rl_agent import *
+#from agent.rl_agent import *
 from statistics import mean
 
 
@@ -55,10 +55,10 @@ def get_agent(agent, color, depth):
         return MinimaxAgent(color, depth=depth), 'Minimax Agent'
     elif agent == 4:
         return AlphaBetaAgent(color, depth=depth), 'AlphaBeta Agent'
-    elif agent == 5:
-        agent = ApproxQAgent(color, RlEnv())
-        agent.load('ApproxQAgent.npy')
-        return agent, 'RL Agent'
+    # elif agent == 5:
+    #     agent = ApproxQAgent(color, RlEnv())
+    #     agent.load('ApproxQAgent.npy')
+    #     return agent, 'RL Agent'
     else:
         raise ValueError('Invalid agent for ' + color)
 
