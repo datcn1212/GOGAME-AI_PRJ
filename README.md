@@ -1,5 +1,5 @@
 # MINIGO - AI_PRJ
-Project for AI subject - MiniGo </p>
+Project for AI subject - MiniGo, using AI algorithm such as Minimax, Alpha-beta prunning for game GO (cờ vây). Setting Reinfocement Learning (RL) in the years to come. </p>
 Note: You should read the report "baocao_ai.pdf" above to understand how to play Go! </p>
 Recommend using VS Code to run this project.
 
